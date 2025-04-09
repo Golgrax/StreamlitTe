@@ -1,0 +1,31 @@
+def show_signup():
+    st.title("Sign Up")
+    with st.form(key='signup_form'):
+        first_name = st.text_input("First Name")
+        last_name = st.text_input("Last Name")
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        submit = st.form_submit_button("Sign Up")
+        if submit:
+            if not all([first_name, last_name, email, password]):
+                st.error("Please fill in all fields.")
+            elif len(password) < 8:
+                st.error("Password must be at least 8 characters long.")
+            elif not (email.endswith('@gmail.com') or email.endswith('@yahoo.com')):
+                st.error("Email must be @gmail.com or @yahoo.com.")
+            else:
+                try:
+                    response = requests.post('http://127.0.0.1:8000/signup/', json={
+                        'first_name': first_name, 'last_name': last_name, 'email': email, 'password': password
+                    })
+                    if response.status_code in [201, 226]:
+                        st.session_state['logged_in'] = True
+                        st.session_state['user_data'] = {'full_name': f"{first_name} {last_name}", 'email': email}
+                        st.rerun()
+                    else:
+                        st.error(response.json().get('message', 'Signup failed.'))
+                except Exception as e:
+                    st.error(f"Error: {e}")
+    if st.button("Back to Login"):
+        st.session_state['page'] = 'login'
+        st.rerun()
