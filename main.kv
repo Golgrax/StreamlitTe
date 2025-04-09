@@ -1,0 +1,9 @@
+def show_main():
+    st.title("PETWATCH")
+    st.write("Your pet's best friend!")
+    if st.button("Login"):
+        st.session_state['page'] = 'login'
+        st.rerun()
+    if st.button("Sign Up"):
+        st.session_state['page'] = 'signup'
+        st.rerun()
