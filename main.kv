@@ -1,0 +1,26 @@
+import requests
+
+def show_login():
+    st.title("Login")
+    with st.form(key='login_form'):
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        submit = st.form_submit_button("Login")
+        if submit:
+            if not email or not password:
+                st.error("Please enter both email and password.")
+            else:
+                try:
+                    response = requests.post('http://127.0.0.1:8000/login/', json={'email': email, 'password': password})
+                    if response.status_code == 200:
+                        user_data = response.json()
+                        st.session_state['logged_in'] = True
+                        st.session_state['user_data'] = {'full_name': user_data.get('full_name'), 'email': email}
+                        st.rerun()
+                    else:
+                        st.error(response.json().get('error', 'Login failed.'))
+                except Exception as e:
+                    st.error(f"Error: {e}")
+    if st.button("Sign Up Instead"):
+        st.session_state['page'] = 'signup'
+        st.rerun()
