@@ -1,16 +1,14 @@
-# pages/profile.py
 import streamlit as st
+from streamlit_extras.switch_page import switch_page
 
-def display_profile():
-    if not st.session_state['logged_in']:
-        st.error("Please log in to access your profile.")
-        return
+if not st.session_state.get('logged_in', False):
+    switch_page("pages/login.py")
 
-    st.title("Profile")
-    user_data = st.session_state['user_data']
-    st.write(f"First Name: {user_data.get('first_name', 'N/A')}")
-    st.write(f"Last Name: {user_data.get('last_name', 'N/A')}")
-    st.write(f"Email: {user_data.get('email', 'N/A')}")
+user_data = st.session_state['user_data']
+st.image("assets/profile_tab_removebg.png", width=300)
+st.markdown(f"<h2>First Name: {user_data['first_name']}</h2>", unsafe_allow_html=True)
+st.markdown(f"<h2>Last Name: {user_data['last_name']}</h2>", unsafe_allow_html=True)
+st.markdown(f"<h2>Email: {user_data['email']}</h2>", unsafe_allow_html=True)
 
-if __name__ == '__main__':
-    display_profile()
+if st.button("Next"):
+    switch_page("pages/pet_profile.py")
