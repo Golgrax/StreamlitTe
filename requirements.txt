@@ -6,3 +6,4 @@ pillow
 tensorflow
 matplotlib
 streamlit-autorefresh
+streamlit-extras
