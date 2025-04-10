@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_extras.switch_page_button import switch_page_button
+from streamlit_extras.switch_page_button import switch_page
 
 # Apply background image
 st.markdown(
