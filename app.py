@@ -22,6 +22,6 @@ with col2:
     st.markdown("<p style='text-align: center; color: #875012;'>Your pet's best friend!</p>", unsafe_allow_html=True)
     
     if st.button("LOGIN"):
-        switch_page("pages/login.py")
+        switch_page_button("pages/login.py")
     if st.button("SIGN UP"):
-        switch_page("pages/signup.py")
+        switch_page_button("pages/signup.py")
