@@ -1,29 +1,33 @@
-# pages/dashboard.py
 import streamlit as st
+from streamlit_extras.switch_page import switch_page
 import requests
 
-def display_dashboard():
-    if not st.session_state['logged_in']:
-        st.error("Please log in to access the dashboard.")
-        return
+if not st.session_state.get('logged_in', False):
+    switch_page("pages/login.py")
 
-    st.title("Dashboard")
-    user_data = st.session_state['user_data']
-    st.markdown(f"<h3>Hello, <b>{user_data.get('full_name', 'User')}</b></h3>", unsafe_allow_html=True)
-    
-    # Fetch pet profile
-    email = user_data.get('email', '')
-    url = f'http://127.0.0.1:8000/pet_profile/?email={email}'
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            pet_profile = response.json()[0] if isinstance(response.json(), list) else response.json()
-            st.write(f"Name: {pet_profile.get('pet_name', 'N/A')}")
-            st.write(f"Breed: {pet_profile.get('breed', 'N/A')}")
-            st.write(f"Age: {pet_profile.get('age', 'N/A')} {pet_profile.get('age_unit', '')} old")
-            st.write(f"Gender: {pet_profile.get('gender', 'N/A')}")
-    except Exception as e:
-        st.write("No pet profile available.")
+user_data = st.session_state['user_data']
+full_name = user_data['full_name']
+email = user_data['email']
 
-if __name__ == '__main__':
-    display_dashboard()
+st.markdown(f"<h1>Hello, {full_name}</h1>", unsafe_allow_html=True)
+response = requests.get(f"http://127.0.0.1:8000/pet_profile/?email={email}")
+if response.status_code == 200 and response.json():
+    pet = response.json()[0]
+    st.write(f"Pet Name: {pet['pet_name']}")
+    st.write(f"Breed: {pet['breed']}")
+    st.write(f"Age: {pet['age']} {pet['age_unit']} old")
+    st.write(f"Gender: {pet['gender']}")
+else:
+    st.write("No pet profile available.")
+
+# Navigation
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button("Live Feed"):
+        switch_page("pages/live_feed.py")
+with col2:
+    if st.button("Activity Logs"):
+        switch_page("pages/activity_logs.py")
+with col3:
+    if st.button("Profile"):
+        switch_page("pages/profile_tab.py")
