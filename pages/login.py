@@ -1,45 +1,35 @@
-# pages/login.py
 import streamlit as st
+from streamlit_extras.switch_page import switch_page
 import requests
 
-def display_login():
-    if st.session_state['logged_in']:
-        st.write("You are already logged in.")
-        return
+# Redirect if already logged in
+if st.session_state.get('logged_in', False):
+    switch_page("pages/dashboard.py")
 
-    st.title("Login")
-    st.image("../assets/login.png", use_column_width=True)
-    st.markdown("<h2 style='color: #4F3630;'>Welcome!</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #875012;'>Sign in to continue</p>", unsafe_allow_html=True)
+st.title("Login")
+if st.button("← Back"):
+    switch_page("app.py")
 
-    email = st.text_input("Email", placeholder="Email")
-    password = st.text_input("Password", type="password", placeholder="Password")
-    
-    if st.button("Login"):
-        url = 'http://127.0.0.1:8000/login/'
-        data = {'email': email, 'password': password}
-        try:
-            response = requests.post(url, json=data)
-            if response.status_code == 200:
-                user_data = response.json()
-                st.session_state['logged_in'] = True
-                st.session_state['user_data'] = user_data
-                st.session_state['page'] = 'dashboard'
-                st.rerun()
-            else:
-                st.error(response.json().get('error', 'Login failed'))
-        except Exception as e:
-            st.error(f"Error: {e}")
+st.markdown("<h1 style='text-align: center; color: #4F3630;'>W e l c o m e!</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #875012;'>Sign in to continue</p>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Forgot Password"):
-            st.session_state['page'] = 'forgot_password'
-            st.rerun()
-    with col2:
-        if st.button("Sign Up"):
-            st.session_state['page'] = 'signup'
-            st.rerun()
+email = st.text_input("Email", placeholder="Email")
+password = st.text_input("Password", type="password", placeholder="Password")
 
-if __name__ == '__main__':
-    display_login()
+if st.button("LOGIN"):
+    if not email or not password:
+        st.error("Please enter both email and password.")
+    else:
+        response = requests.post("http://127.0.0.1:8000/login/", json={"email": email, "password": password})
+        if response.status_code == 200:
+            st.session_state['logged_in'] = True
+            st.session_state['user_data'] = response.json()
+            switch_page("pages/dashboard.py")
+        else:
+            st.error(response.json().get('error', 'Login failed'))
+
+if st.button("Forgot Password?"):
+    switch_page("pages/forgot_password.py")
+
+if st.button("Don't have an account? Sign up"):
+    switch_page("pages/signup.py")
